@@ -30,11 +30,6 @@ class Trainer():
         self.logger = logger.Logger(args, self.num_classes)
         self.args = args
 
-        self.pre_split_train = {'TRAIN': [],
-                                'VALID': [],
-                                'TEST': [] }
-    
-
         self.init_optimizers(args)
 
         # for name, param in self.gcn.named_parameters():
@@ -177,42 +172,13 @@ class Trainer():
         self.logger.log_epoch_start(epoch, len(split), set_name, minibatch_log_interval=log_interval)
 
         torch.set_grad_enabled(grad)
-        ctr = 0  
-        list_empty = (len(self.pre_split_train[set_name]) == 0)
-    
-        for i, s in enumerate(split):
+        ctr = 0 
+        for s in split:
             ctr = ctr + 1
-
-            if self.args.data == 'reddit':
-                if self.tasker.is_static:
-                    s = self.prepare_static_sample(s)
-                else:
-                    s = self.prepare_sample(s)
-
+            if self.tasker.is_static:
+                s = self.prepare_static_sample(s)
             else:
-                if list_empty:
-                    if self.tasker.is_static:
-                        s = self.prepare_static_sample(s)
-                    else:
-                        s = self.prepare_sample(s)
-                    self.pre_split_train[set_name].append(s)
-
-                else:
-                    s = self.pre_split_train[set_name][i]
-
-
-
-            # if ctr == 5:
-            # 	A = s.hist_adj_list[-1].to_sparse_csr()
-            # 	dir = '../datasets/DGNN/' + self.args.data + '/'
-            # 	torch.save(A, dir + 'A.pt')
-
-            # 	X = s.hist_ndFeats_list[-1]
-                
-            # 	if not X.is_sparse:
-            # 		X = X.to_sparse_coo().to_sparse_csr()
-
-            # 	torch.save(X, dir + 'X.pt')
+                s = self.prepare_sample(s)
 
             predictions, nodes_embs = self.predict(s.hist_adj_list,
                                                    s.hist_ndFeats_list,

@@ -190,12 +190,13 @@ if __name__ == '__main__':
 
     if args.pruning_type == 'column':
         args.sparse_init = 'row_wise_uniform' 
+        # args.growth = 'row_wise_gradient'
         args.growth = 'ucb_row_wise'
         args.death = 'row_wise'
 
 
     args.density = 1 - args.sparsity_rate
-
+    
 
     global rank, wsize, use_cuda
     args.use_cuda = (torch.cuda.is_available() and args.use_cuda)

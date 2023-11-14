@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import yaml
 import copy
+import os
 
 def get_pruned_parameters(file):
     with open(file, 'r') as stream:
@@ -141,10 +142,6 @@ class Trainer():
 
         self.logger = logger.Logger(args, self.num_classes)
         self.args = args
-        self.pre_split_train = {'TRAIN': [],
-                            'VALID': [],
-                            'TEST': [] }
-
 
         self.init_optimizers(args)
 
@@ -255,34 +252,41 @@ class Trainer():
          
 
     def train(self):
-        self.tr_step = 0
-        best_eval_valid = 0
-        eval_valid = 0
-        epochs_without_impr = 0
-        best_model = None
 
-        print("Pre-training")
-        for e in range(int(self.args.num_epochs/2)):
-            eval_train, nodes_embs = self.run_epoch(self.splitter.train, e, 'TRAIN', grad = True)
-            if len(self.splitter.dev)>0 and e>self.args.eval_after_epochs and (e+1)%self.args.valid_freq==0:
-                eval_valid, _ = self.run_epoch(self.splitter.dev, e, 'VALID', grad = False)
-                if eval_valid>best_eval_valid:
-                    best_model = copy.deepcopy(self.gcn)
-                    best_eval_valid = eval_valid
-                    epochs_without_impr = 0
-                    # print ('### w'+str(self.args.rank)+') ep '+str(e)+' - Best valid measure:'+str(eval_valid))
-                else:
-                    epochs_without_impr+=1
-                    if epochs_without_impr>self.args.early_stop_patience:
-                        print ('### w'+str(self.args.rank)+') ep '+str(e)+' - Early stop.')
-                        break
+        model_path =  self.args.data + ".ckpt"
+        if not os.path.exists(model_path):
 
-            # if len(self.splitter.test)>0 and eval_valid==best_eval_valid and e>self.args.eval_after_epochs and (e+1)%self.args.valid_freq==0:
-            #     eval_test, _ = self.run_epoch(self.splitter.test, e, 'TEST', grad = False)
-        
+            self.tr_step = 0
+            best_eval_valid = 0
+            eval_valid = 0
+            epochs_without_impr = 0
+            best_model = None
 
-        if best_model != None:
-            self.gcn = copy.deepcopy(best_model)
+            print("Pre-training")
+            for e in range(int(self.args.num_epochs/2)):
+                eval_train, nodes_embs = self.run_epoch(self.splitter.train, e, 'TRAIN', grad = True)
+                if len(self.splitter.dev)>0 and e>self.args.eval_after_epochs and (e+1)%self.args.valid_freq==0:
+                    eval_valid, _ = self.run_epoch(self.splitter.dev, e, 'VALID', grad = False)
+                    if eval_valid>best_eval_valid:
+                        best_model = copy.deepcopy(self.gcn)
+                        best_eval_valid = eval_valid
+                        epochs_without_impr = 0
+                        print ('### w'+str(self.args.rank)+') ep '+str(e)+' - Best valid measure:'+str(eval_valid))
+                    else:
+                        epochs_without_impr+=1
+                        if epochs_without_impr>self.args.early_stop_patience:
+                            print ('### w'+str(self.args.rank)+') ep '+str(e)+' - Early stop.')
+                            break
+
+                # if len(self.splitter.test)>0 and eval_valid==best_eval_valid and e>self.args.eval_after_epochs and (e+1)%self.args.valid_freq==0:
+                #     eval_test, _ = self.run_epoch(self.splitter.test, e, 'TEST', grad = False)
+            
+            torch.save(self.gcn.state_dict(), model_path)
+
+            if best_model != None:
+                self.gcn = copy.deepcopy(best_model)
+        else:
+            self.gcn.load_state_dict(torch.load(model_path))
 
         self.tr_step = 0
         best_eval_valid = 0
@@ -330,45 +334,13 @@ class Trainer():
         self.logger.log_epoch_start(epoch, len(split), set_name, minibatch_log_interval=log_interval)
 
         torch.set_grad_enabled(grad)
-        ctr = 0  
-        list_empty = (len(self.pre_split_train[set_name]) == 0)
-   
-        for i, s in enumerate(split):
+        ctr = 0 
+        for s in split:
             ctr = ctr + 1
-
-            if self.args.data == 'reddit':
-                if self.tasker.is_static:
-                    s = self.prepare_static_sample(s)
-                else:
-                    s = self.prepare_sample(s)
-
+            if self.tasker.is_static:
+                s = self.prepare_static_sample(s)
             else:
-                if list_empty:
-                    if self.tasker.is_static:
-                        s = self.prepare_static_sample(s)
-                    else:
-                        s = self.prepare_sample(s)
-                    self.pre_split_train[set_name].append(s)
-
-                else:
-                    s = self.pre_split_train[set_name][i]
-
-
-            # if ctr == 5:
-            # 	A = s.hist_adj_list[-1].to_sparse_csr()
-            # 	A_dir = 'sparse_matrices/' + self.args.data + '/A/sparse/'
-            # 	torch.save(A, A_dir + 'matrix.pt')
-
-            # 	X = s.hist_ndFeats_list[-1]
-                
-            # 	if not X.is_sparse:
-            # 		X = X.to_sparse_coo().to_sparse_csr()
-            # 		X_dir = 'sparse_matrices/' + self.args.data + '/X/dense/'
-            # 	else: 
-            # 		X_dir = 'sparse_matrices/' + self.args.data + '/X/sparse/'
-            # 	torch.save(X, X_dir + 'matrix.pt')
-    
-
+                s = self.prepare_sample(s)
 
             predictions, nodes_embs = self.predict(s.hist_adj_list,
                                                    s.hist_ndFeats_list,

@@ -145,6 +145,18 @@ def build_gcn(args,tasker):
             return mls.Sp_GCN_LSTM_A(gcn_args,activation = torch.nn.RReLU()).to(args.device)
         elif args.model == 'gruA':
             return mls.Sp_GCN_GRU_A(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+        # elif args.model == 'lstmB':
+        # 	return mls.Sp_GCN_LSTM_B(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+        # elif args.model == 'gruB':
+        # 	return mls.Sp_GCN_GRU_B(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+        # elif args.model == 'egcn':
+        # 	return egcn.EGCN(gcn_args, activation = torch.nn.RReLU()).to(args.device)
+        # elif args.model == 'egcn_h':
+        # 	return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device)
+        # elif args.model == 'skipfeatsegcn_h':
+        # 	return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device, skipfeats=True)
+        # elif args.model == 'egcn_o':
+        # 	return egcn_o.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device)
         else:
             raise NotImplementedError('need to finish modifying the models')
 
@@ -166,6 +178,7 @@ if __name__ == '__main__':
     parser = u.create_parser()
     args = u.parse_args(parser) 
     args.density = 1 - args.sparsity_rate
+
 
     global rank, wsize, use_cuda
     args.use_cuda = (torch.cuda.is_available() and args.use_cuda)
