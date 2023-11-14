@@ -271,7 +271,7 @@ class Trainer():
                         best_model = copy.deepcopy(self.gcn)
                         best_eval_valid = eval_valid
                         epochs_without_impr = 0
-                        print ('### w'+str(self.args.rank)+') ep '+str(e)+' - Best valid measure:'+str(eval_valid))
+                        # print ('### w'+str(self.args.rank)+') ep '+str(e)+' - Best valid measure:'+str(eval_valid))
                     else:
                         epochs_without_impr+=1
                         if epochs_without_impr>self.args.early_stop_patience:
