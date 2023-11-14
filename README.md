@@ -5,31 +5,31 @@ This appendix describes the process of acquiring a subset of experimental result
 Framework for Graph Neural Network Pruning (HPCA 2024)". The artifacts include the implementations of the proposed sparse training algorithm and the LASSO regression-based pruning algorithm for GNN sparsification during training for various GNN models on real-world graphs, as well as the performance evaluation of pruned GNN inference using cuSPARSE and Prune-SpMM kernels.
 
 
-# Requirements
-## Hardware
+## Requirements
+### Hardware
 - GPU: NVIDIA A100
 - Disk Space: 15 GB
 
-## Software
+### Software
 - Linux
 - zip
 - wget
 - Docker
 - NVIDIA A100 GPU drivers supporting CUDA 11.7
 
-# Download and Extract PruneGNN Archive
+## Download and Extract PruneGNN Archive
 Download and extract the PruneGNN archive:
 
   git clone https://github.com/grvndnz/PruneGNN
   cd PruneGNN
 
-# Download and Extract Dynamic Datasets
+## Download and Extract Dynamic Datasets
 Download and extract the dynamic datasets evaluated in PruneGNN:
 
     ./get_dataset.sh
 
-# PruneGNN Docker Container Setup
-## Create and Attach to Container
+## PruneGNN Docker Container Setup
+### Create and Attach to Container
 Create a new PruneGNN Docker container and install its dependencies using the following script:
 
     ./docker_setup.sh
@@ -38,15 +38,15 @@ Attach to the PruneGNN container as follows:
 
     docker attach prune-gnn
 
-## Build PruneGNN PyTorch Extension 
+### Build PruneGNN PyTorch Extension 
 Build the PruneGNN kernels and PyTorch extension within the PruneGNN container:
 
     cd /PruneGNN
     ./prune_gnn_setup.sh
 
-# Run Experiments
+## Run Experiments
 
-## 1. Sparsity & Accuracy Analysis
+### 1. Sparsity & Accuracy Analysis
 
 To run compare the irregular pruning, lasso structured pruning and sparse training based structured pruning, run the following commands:
 
@@ -55,7 +55,7 @@ To run compare the irregular pruning, lasso structured pruning and sparse traini
 
 This will run the training for all configurations in "driver_config/train_config.py" for 5 times and generate the accuracy and sparsity results achieved by each algorithm. The average of the 5 runs are reported in "logs/train_config_summary.csv" for each dataset and model. The 3 evaluated algorithms should generate the same model accuracy (+/- 2%) under their corresponding sparsity rates. 
 
-## 2. Inference Performance Analysis
+### 2. Inference Performance Analysis
 
 To compare 4 systems for inference (i.e., (1) Irregular Pruning with cuSPARSE, (2) LASSO Structured Pruning with  kernels, (3) LASSO Structured Pruning with Prune-SpMM kernels, and (4) Structured Sparse Training with Prune-SpMM), run the following commands:
 
