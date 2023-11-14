@@ -56,7 +56,7 @@ This will run the training for all configurations in "config/train_config.py" fo
 
 ### 2. Inference Performance Analysis
 
-To compare 4 systems for inference (i.e., (1) Irregular Pruning with cuSPARSE, (2) LASSO Structured Pruning with cuSPARSE kernels, (3) LASSO Structured Pruning with Prune-SpMM kernels, and (4) Structured Sparse Training with Prune-SpMM), run the following commands:
+To compare 4 systems for inference (i.e., (1) Irregular Pruning with cuSPARSE, (2) LASSO Structured Pruning with cuSPARSE SpMM kernels, (3) LASSO Structured Pruning with Prune-SpMM kernels, and (4) Structured Sparse Training with Prune-SpMM), run the following commands:
 
     cd /PruneGNN/experiments/inference
     python performance_driver.py -r 5 --config inference_config
