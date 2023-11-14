@@ -18,8 +18,9 @@ Framework for Graph Neural Network Pruning (HPCA 2024)". The artifacts include t
 ## Download and Extract PruneGNN Archive
 Download and extract the PruneGNN archive:
 
-  git clone https://github.com/grvndnz/PruneGNN
-  cd PruneGNN
+    git clone https://github.com/grvndnz/PruneGNN
+    cd PruneGNN
+    
 
 ## Download and Extract Dynamic Datasets
 Download and extract the dynamic datasets evaluated in PruneGNN:
