@@ -52,7 +52,7 @@ To run compare the irregular pruning, lasso structured pruning and sparse traini
     cd /PruneGNN/experiments/pruning/
     python training_driver.py -r 5 --config train_config
 
-This will run the training for all configurations in "driver_config/train_config.py" for 5 times and generate the accuracy and sparsity results achieved by each algorithm. The average of the 5 runs are reported in "logs/train_config_summary.csv" for each dataset and model. The 3 evaluated algorithms should generate the same model accuracy (+/- 2%) under their corresponding sparsity rates. 
+This will run the training for all configurations in "config/train_config.py" for 5 times and generate the accuracy and sparsity results achieved by each algorithm. The average of the 5 runs are reported in "logs/train_config_summary.csv" for each dataset and model. The 3 evaluated algorithms should generate the same model accuracy (+/- 2%) under their corresponding sparsity rates. 
 
 ### 2. Inference Performance Analysis
 
