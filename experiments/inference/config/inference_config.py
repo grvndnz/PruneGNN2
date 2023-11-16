@@ -724,7 +724,7 @@ configurations = [
         algorithm=["ST"],
         mode=["inference"],
         kernel_type=["pruneSp"],
-        sparsity_rate=[0.55]
+        sparsity_rate=[0.5]
     ),
 
     Configuration(
