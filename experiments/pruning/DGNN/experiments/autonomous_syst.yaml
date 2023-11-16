@@ -35,10 +35,10 @@ smart_neg_sampling: True
 seed: 1234
 target_measure: MAP # measure to define the best epoch F1, Precision, Recall, MRR, MAP
 target_class: all # Target class to get the measure to define the best epoch (all, 0, 1)
-early_stop_patience: 2
+early_stop_patience: 5
 
 
-valid_freq: 10
+valid_freq: 5
 eval_after_epochs: 50
 adj_mat_time_window: 1  # Time window to create the adj matrix for each timestep. Use None to use all the history (from 0 to t)
 # adj_mat_time_window_min: 1
